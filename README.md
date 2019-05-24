@@ -1,3 +1,30 @@
+# At a glance
+Prepare the project to be linked
+
+```bash
+yarn install
+yarn deploy
+```
+
+Navigate to your project folder and link
+
+```bash
+npm link eclesial
+```
+
+Now you are ready to use this generators
+```bash
+ng g eclesial:application
+ng g eclesial:component
+ng g eclesial:search
+ng g eclesial:search-input
+ng g eclesial:service
+ng g eclesial:viewmodel
+
+ng g eclesial:severino
+```
+
+
 # Getting Started With Schematics
 
 This repository is a basic Schematic implementation that serves as a starting point to create and publish Schematics to NPM.
