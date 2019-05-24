@@ -1,0 +1,12 @@
+{
+    "name": "FooBar",
+    "path": "aplication/components",
+    "fields": [
+        {"name": "status", "label": "Status", "type": "array", "entries": ["search", "form"] },
+        {"name": "name", "label": "Nome", "required": true, "type": "number", "entries": ["search", "form"] },
+        {"formGroup":"convenio",  "name": "codigo", "label": "Código", "type": "number"},
+        {"formGroup":"convenio",  "name": "descricao", "label": "Descrição", "type": "number"},
+        {"name": "ativo", "label": "Ativo", "type": "boolean", "entries": ["search", "form"] },
+        {"name": "description", "label": "Descrição", "required": true, "type": "textArea", "limit":250, "entries": ["search", "form"] }   
+    ]
+}

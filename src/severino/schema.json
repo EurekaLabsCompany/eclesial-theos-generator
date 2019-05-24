@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "id": "severino",
+    "title": "All generators in one place",
+    "type": "object",
+    "description": "Generates all components to supply a new screen, search and others related",
+    "properties": {
+      
+      "generators": {
+        "type": "array",
+        "x-prompt": {
+          "message": "What do you need me to generate?",
+          "type": "list",
+          "multiselect": true,
+          "items": ["application", "component", "search", "search-input", "service", "viewmodel"],
+        }       
+      },
+      
+      "nameOrseed": {
+        "type": "string",
+        "x-prompt": "Inform a seed file or a name",
+        "description": "A seed is a json file with the necessary configs to generate the objects"
+      }
+      
+    },
+    "required": [
+      "generators", "nameOrseed"
+    ]
+  }

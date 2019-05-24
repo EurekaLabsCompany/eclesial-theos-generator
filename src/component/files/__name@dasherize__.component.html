@@ -1,0 +1,93 @@
+<div id="content">
+	<sa-widgets-grid>
+		<article class="card-theos-fluid">
+			<div class="jarviswidget jarviswidget-sortable" 
+				 id="wid-id-1" 
+				 data-widget-colorbutton="false" 
+				 data-widget-editbutton="false"
+				 data-widget-custombutton="false" 
+				 role="widget">
+
+				<header class="titulo-tela" name="widget-header">
+					<span class="flex-children">
+						<span class="widget-icon">
+							<i class="fa fa-edit"></i>
+						</span>
+						<h2>{{routeName}}</h2>
+					</span>
+					<span class="flex-children">
+						<a (click)="search()">
+							<i class="fa fa-search search_icon"></i>
+						</a>
+
+						<a routerLink="/#">
+							<i class="fa fa-clock-o"></i>
+						</a>
+
+						<a routerLink="/#">
+							<i class="fa fa-question-circle"></i>
+						</a>
+
+						<a (click)="exit()">
+							<i class="fa fa-times close-icon"></i>
+						</a>
+					</span>
+				</header>
+
+				<div class="widget-body">
+					<form autocomplete="off" [formGroup]="formGroup" (keyup.enter)="keyEnter($event)">
+
+						<div class="row justify-content-center" name="widget-body-content">
+
+							<div class="grid-theos max-width-1000" name="<%= dasherize(name) %>">
+								<div class="box-theos">
+									<span class="header">										
+										<%= totext(name) %>
+									</span>
+									<div class="body">
+										<div class="row">
+											<%= fields.length > 0 ? getHtmlComponents(fields) : getDefaultHtmlComponent %>
+										</div>
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</form>
+
+					<div class="row justify-content-center" name="widget-footer-form-actions">
+						<div class="col-12">
+							<app-form-actions [actions]="formActions" 
+											  [formGroup]="formGroup" 
+											  (new)="new()" 
+											  (edit)="edit()" 
+											  (delete)="delete()" 
+											  (search)="search()"
+											  (save)="save()" 
+											  (undo)="undo()">
+							</app-form-actions>
+						</div>
+					</div>
+
+					<div class="row justify-content-center" name="widget-footer-status-state">
+						<div class="col-12">
+							<app-eclesial-status-state [statusState]="statusState"></app-eclesial-status-state>
+						</div>
+					</div>
+				
+				</div>
+
+			</div>
+		</article>
+	</sa-widgets-grid>
+</div>
+
+<ng-snotify></ng-snotify>
+
+<app-<%= dasherize(name) %>-search (selected)="searchSelected($event)"></app-<%= dasherize(name) %>-search>
+
+<app-confirm-delete (confirm)="remove()" 
+					[confirmationModalId]="confirmationModalId" 
+					[confirmationModalTitle]="confirmationModalTitle"
+					[confirmationModalBodyText]="confirmationModalBodyText">
+</app-confirm-delete>

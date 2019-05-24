@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "id": "search-input",
+    "title": "Generating the search-input file",
+    "type": "object",
+
+    "properties": {      
+      "nameOrseed": {
+        "type": "string",
+        "x-prompt": "Inform a seed file or a name: ",
+        "description": "A seed is a json file with the necessary configs to generate the objects"
+      }
+      
+    },
+    "required": [
+      "nameOrseed"
+    ]
+  }

@@ -1,0 +1,27 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "id": "application",
+    "title": "Generating the component file",
+    "type": "object",
+
+    "properties": {      
+      "nameOrseed": {
+        "type": "string",
+        "x-prompt": "Inform a seed file or a name: ",
+        "description": "A seed is a json file with the necessary configs to generate the objects"
+      },
+      
+      "fields": {
+        "type": "array",
+        "description": "a list of fields",
+        "$default": {
+          "$source": "argv",
+          "index": 0
+        }
+      }
+      
+    },
+    "required": [
+      "nameOrseed"
+    ]
+  }
