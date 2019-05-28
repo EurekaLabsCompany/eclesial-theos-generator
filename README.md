@@ -3,7 +3,8 @@ Prepare the project to be linked
 
 ```bash
 yarn install
-yarn deploy
+yarn build
+npm link
 ```
 
 Navigate to your project folder and link

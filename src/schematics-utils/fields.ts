@@ -129,11 +129,12 @@ const generateField = (field: any) => {
 const getControlConfig = (field:any) => {
     var controlConfig: any = {isGroup: false, options:{}};
     if(!field.formGroup || field.formGroup == 'formGroup'){
-        controlConfig.name = field.name;
+        controlConfig.name = field.name;        
         controlConfig.options = getFieldGeneralConfig(field);
     }else{
-        controlConfig.name = field.formGroup;;        
-        controlConfig.isGroup = true;        
+        controlConfig.name = field.formGroup;
+        controlConfig.isGroup = true;
+        controlConfig.required = field.required;
     }
     
     return controlConfig;
@@ -165,17 +166,20 @@ const generateFieldControl = (fields:any[]) => (fieldConfig: any) =>{
     
     if(fieldConfig.isGroup){
         filteredFields = fields.filter(f=> f.formGroup === fieldConfig.name);
-        return `          ${fieldConfig.name}: this.formBuilder.group({\n  ${filteredFields.map(generateSimpleFieldControl).join(', \n  ')}
-          })`
+        return `          ${fieldConfig.name}: this.formBuilder.group({\n  ${filteredFields.map(generateSimpleFieldControlToGroup).join(', \n  ')}
+          }${fieldConfig.required ? ', { validator: EclesialInputSearchValidatorRequired }' : '' })`
     }else{
         filteredFields = fields.filter(f=> f.name === fieldConfig.name);
         return filteredFields.map(generateSimpleFieldControl);
     }
 }
 
+const generateSimpleFieldControlToGroup = (field:any) => {
+    var notRequiredField = {...field, required: false};
+    return generateSimpleFieldControl(notRequiredField);
+}
 
-
-const generateSimpleFieldControl = (field:any) =>`          ${field.name}: [''${field.required? ', Validators.required' : ''}]`
+const generateSimpleFieldControl = (field:any) =>`          ${field.name}: ${field.required? '[ null , Validators.required ]' : 'null'}`
 
 const generateSimpleFieldReferenceControl =  (fieldConfig:any) =>(`
     this.control${capitalize(fieldConfig.name)} = <${fieldConfig.isGroup ? 'FormGroup' :'FormControl'}>this.formGroup.get('${fieldConfig.name}');`
