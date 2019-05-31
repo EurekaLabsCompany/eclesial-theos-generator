@@ -29,8 +29,8 @@ const getFieldCommomProperties = (field: any) => (
 const getSelectProperties = (field: any) => (
     `                           
                                                                 [options]="${field.name}List" 
-                                                                value="${field.name}"
-                                                                description="${field.name}"`
+                                                                value="id"
+                                                                description="descricao"`
 )
 
 const getSearchFields = (fields: any[]) => fields.filter(f => f.entries && f.entries.indexOf("search") >= 0);
@@ -248,7 +248,7 @@ export const getConditionalFieldConfig = (fields: any[]) => {
     searchFields.forEach((field, index) => {
         results.push(getConditionField(field, index++));
     });
-    return results.join('');    
+    return results.join(',');    
 }
 
 

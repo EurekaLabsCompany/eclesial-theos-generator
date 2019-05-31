@@ -14,7 +14,7 @@ export function application(options: any): Rule {
 
   return (host: Tree, context: SchematicContext) => {
     options = normalizeOptions(options);
-    options = proccessFoderPath('aplication', options, host);
+    options = proccessFoderPath('application', options, host);
           
     const templateSource = apply(url('./files'), [
         filterTemplates(),

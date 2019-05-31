@@ -5,7 +5,7 @@ import { PermissionService } from '@app/config/app-permission.service';
 import { <%= classify(name) %>Component } from './<%= dasherize(name) %>.component';
 import { <%= classify(name) %>Service } from '../service/<%= dasherize(name) %>.service';
 import { <%= classify(name) %>Application } from '../application/<%= dasherize(name) %>.application';
-import { <%= classify(name) %>SearchModule } from '../search/<%= dasherize(name) %>-search-module';
+import { <%= classify(name) %>SearchModule } from '../search/<%= dasherize(name) %>-search.module';
 
 
 

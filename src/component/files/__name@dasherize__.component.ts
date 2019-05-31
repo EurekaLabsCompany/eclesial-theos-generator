@@ -25,6 +25,9 @@ export class <%= classify(name) %>Component extends BaseComponent {
 
     public routeName: string = '';
     public userName: string = '';
+
+    controlOrganismo: FormGroup;
+    controlTelaSistema: FormControl;
     
 <%= fields.length > 0 ? getFieldControlsVariables(fields) : "//TODO - Declare your control variables here!" %>
 
@@ -67,6 +70,13 @@ export class <%= classify(name) %>Component extends BaseComponent {
     private _createForm() {
         this.formGroup = this.formBuilder.group({
 <%= fields? getFieldControls(fields) : '//TODO - Define the controls here!' %>
+        ,
+        organismo: this.formBuilder.group({
+            id: null,
+            codigo: [''],
+            descricao: null
+        }),
+        telaSistema: null
         });
 
         this._setControls();
@@ -75,11 +85,17 @@ export class <%= classify(name) %>Component extends BaseComponent {
         
 
     private _setControls() {
+        this.controlOrganismo = <FormGroup>this.formGroup.get('organismo');
+        this.controlTelaSistema = <FormControl>this.formGroup.get('telaSistema');
+
         <%= fields?  getFieldControlsReferences(fields) : '//TODO - set the control references here!' %>
     }
 
     private _setDefaultValues() {
-        this.userName = AppConfig.usuario.nome;      
+        this.userName = AppConfig.usuario.nome;  
+        this.controlOrganismo.get('id').setValue(parseInt(AppConfig.organismoId));
+        this.controlOrganismo.get('descricao').setValue(AppConfig.organismoNome);
+        this.controlTelaSistema.setValue(TelaSistemaEnum.<%= tovariable(name) %>); 
     }
     
     onIncludeState() {
@@ -94,10 +110,22 @@ export class <%= classify(name) %>Component extends BaseComponent {
         this.controlTelaSistema.setValue(TelaSistemaEnum.<%= tovariable(name) %>);
     }
 
+    _hasPermissionToSave(){
+        switch (this.statusState) {
+            case StatusStateEnum.Include:
+                return this.permissionService.PermissionInserir(this.action);
+            case StatusStateEnum.Edit:
+                return this.permissionService.PermissionEditar(this.action);
+            default:
+                return false;
+        }       
+    }
 
-    save(isNew: boolean = false) {
 
-        if (this.permissionService.PermissionInserir(this.action) || this.permissionService.PermissionEditar(this.action)) {
+
+    save() {
+
+        if (this._hasPermissionToSave()) {
            
             this.controlService.markAllTouched(this.formGroup);
             this.trySave = true;
@@ -136,33 +164,5 @@ export class <%= classify(name) %>Component extends BaseComponent {
         this._eclesialNotificationService.clear();
     }
 
-    exit() {
-        this.router.navigate(['/']);
-    }
-
-    undo() {
-        this.trySave = false;
-
-        if (this.statusState === StatusStateEnum.Include) {
-            this.setIncludeState();
-        } else {
-            this.formGroup.reset(this.defaultValues);
-            if (this.statusState === StatusStateEnum.Edit) {
-                Object.keys(this.formGroupOriginalValue).forEach((key) => {
-                    let control = this.formGroup.get(key);
-
-                    if (control !== null) {
-                        control.setValue(this.formGroupOriginalValue[key]);
-                    }
-                });
-
-                this.setViewState();
-            }
-        }
-    }
-
-    new() {
-        this.setIncludeState();
-    }
    
 }

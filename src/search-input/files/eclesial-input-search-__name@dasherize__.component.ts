@@ -39,7 +39,7 @@ export class EclesialInputSearch<%= classify(name) %>Component extends EclesialI
 
     openModal(controlValue: string) {
 
-        let componentFactory = this.componentFactoryResolver.resolveComponentFactory(BancoSearchComponent);
+        let componentFactory = this.componentFactoryResolver.resolveComponentFactory(<%= classify(name) %>SearchComponent);
 
         let viewContainerRef = this.eclesialDinamicoDirective.viewContainerRef;
         viewContainerRef.clear();
