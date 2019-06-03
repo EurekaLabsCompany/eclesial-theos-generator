@@ -1,4 +1,5 @@
-import { capitalize } from '@angular-devkit/core/src/utils/strings';
+import { capitalize, dasherize } from '@angular-devkit/core/src/utils/strings';
+import { tovariable } from './strings';
 
 
 declare class FieldGeneralConfig {
@@ -33,11 +34,32 @@ const getSelectProperties = (field: any) => (
                                                                 description="descricao"`
 )
 
+const getFindProperties = (field: any) => (
+    `                           
+                                                                (selected)="${tovariable(field.name)}SearchSelected($event)"`
+)
+
+const getStringProperties = (field: any) => {
+return field.limit > 0 ? 
+    (
+    `                           
+                                                                [limit]="${field.limit}"`
+    ) : ''
+}
+
+
 const getSearchFields = (fields: any[]) => fields.filter(f => f.entries && f.entries.indexOf("search") >= 0);
 
 const getFormFields = (fields: any[]) => fields.filter(f => !f.entries || f.entries.indexOf("form") >= 0);
 
 const noopProperties = () => ""
+
+const findControls: any[] = [
+    {name: "id",            type: "number"},
+    {name: "codigo",        type: "number"},
+    {name: "descricao",     type: "string"},
+    {name: "lastResult",    type: "number"}
+]
 
 const fieldMapper:FieldGeneralConfig[] = [
     {
@@ -47,7 +69,7 @@ const fieldMapper:FieldGeneralConfig[] = [
         conditionType: 'ConditionEnum.Numerico',
         dataType:'number',
         width: 80,
-        getFieldProperties: noopProperties
+        getFieldProperties: getStringProperties
     },
     {
         alias: ["string", "text"], 
@@ -56,7 +78,7 @@ const fieldMapper:FieldGeneralConfig[] = [
         conditionType: 'ConditionEnum.String',
         dataType:'string',
         width: 200,
-        getFieldProperties: noopProperties
+        getFieldProperties: getStringProperties
     },
     {
         alias: ["select", "options", "array"], 
@@ -68,11 +90,11 @@ const fieldMapper:FieldGeneralConfig[] = [
         getFieldProperties: getSelectProperties
     },
     {
-        alias: ["bool", "boolean"], 
+        alias: ["bool", "boolean", "boolean"], 
         tag: "app-eclesial-checkbox",
         hasLimit: false,
         conditionType: 'ConditionEnum.Bool',
-        dataType:'bool',
+        dataType:'boolean',
         width: 80,
         getFieldProperties: noopProperties
     },
@@ -83,7 +105,16 @@ const fieldMapper:FieldGeneralConfig[] = [
         conditionType: 'ConditionEnum.String',
         dataType:'string',
         width: 400,
-        getFieldProperties: noopProperties
+        getFieldProperties: getStringProperties
+    },
+    {
+        alias: ["find"], 
+        tag: "app-eclesial-input-search-class",
+        hasLimit: false,
+        conditionType: 'ConditionEnum.Numerico',
+        dataType:'number',
+        width: 400,
+        getFieldProperties: getFindProperties
     },
         
 ]
@@ -109,25 +140,55 @@ const getFieldGeneralConfig = (field: any) => {
 
 const generateField = (field: any) => {
     const fieldConfig:FieldGeneralConfig = getFieldGeneralConfig(field);
-    const fieldHtml = 
-    `
-                                            <div class="col-12" (keydown.tab)="keyEnter($event)">
-                                                <div class="row">
-                                                    <div class="col-12 col-md-4">
+    var fieldHtml = '';
+    
+    if(field.type == 'find'){        
+        const fieldCodigo = {name: 'codigo', type: 'number'};
+        const fieldDescricao = {name: 'descricao', type: 'string'};
+        fieldHtml = 
+        `
+                                                <div class="col-12" (keydown.tab)="keyEnter($event)">
+                                                    <div class="row">
+                                                        <div class="col-12 col-md-4">
+                                                            <div class="theos-label-inline">
+                                                                <app-eclesial-input-search-${dasherize(field.name)} ${getFieldCommomProperties(fieldCodigo)}${fieldConfig.getFieldProperties(field)}>                                                            
+                                                                </app-eclesial-input-search-${dasherize(field.name)}>
+                                                            </div>    
+                                                        </div>
+                                                        <div class="col-12 col-md-8">
                                                         <div class="theos-label-inline">
-                                                            <${fieldConfig.tag} ${getFieldCommomProperties(field)}${fieldConfig.getFieldProperties(field)}>                                                            
-                                                            </${fieldConfig.tag}>
+                                                            <app-eclesial-input-search-${dasherize(field.name)} ${getFieldCommomProperties(fieldDescricao)}${fieldConfig.getFieldProperties(field)}>                                                            
+                                                            </app-eclesial-input-search-${dasherize(field.name)}>
                                                         </div>    
                                                     </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-    `
+        `
+
+    }else{
+        fieldHtml = 
+        `
+                                                <div class="col-12" (keydown.tab)="keyEnter($event)">
+                                                    <div class="row">
+                                                        <div class="col-12 col-md-4">
+                                                            <div class="theos-label-inline">
+                                                                <${fieldConfig.tag} ${getFieldCommomProperties(field)}${fieldConfig.getFieldProperties(field)}>                                                            
+                                                                </${fieldConfig.tag}>
+                                                            </div>    
+                                                        </div>
+                                                    </div>
+                                                </div>
+        `
+
+    }
+
+  
     return fieldHtml;
 }
 
 //Controls
 const getControlConfig = (field:any) => {
-    var controlConfig: any = {isGroup: false, options:{}};
+    var controlConfig: any = {isGroup: false, options:{}};   
     if(!field.formGroup || field.formGroup == 'formGroup'){
         controlConfig.name = field.name;        
         controlConfig.options = getFieldGeneralConfig(field);
@@ -185,7 +246,8 @@ const generateSimpleFieldReferenceControl =  (fieldConfig:any) =>(`
     this.control${capitalize(fieldConfig.name)} = <${fieldConfig.isGroup ? 'FormGroup' :'FormControl'}>this.formGroup.get('${fieldConfig.name}');`
 )
 
-const generateSimpleFieldVariable =  (fieldConfig:any) =>(`     control${capitalize(fieldConfig.name)}: ${fieldConfig.isGroup ? 'FormGroup' : 'FormControl'};`)
+const generateSimpleFieldVariable =  (fieldConfig:any) =>{
+    return (`     control${capitalize(fieldConfig.name)}: ${fieldConfig.isGroup ? 'FormGroup' : 'FormControl'};`)}
 
 const getConditionField = (field:any, index: number) => {
     const fieldConfig:FieldGeneralConfig = getFieldGeneralConfig(field);    
@@ -216,6 +278,42 @@ const getFieldSetterForViewModel = (fieldConfig: any) => {
 
 
 
+const getFindFields = (findField:any) =>{
+   var newFindField;
+    const generatedFields:any[] = [];
+
+        findControls.map(fc => {
+            newFindField = {...fc, formGroup: findField.name, required: findField.required};
+            
+            if(newFindField.name == 'codigo'){
+                newFindField.label = findField.label;
+            }
+
+            generatedFields.push(newFindField);
+        })
+
+    return generatedFields;
+   
+}
+
+const proccessFields = (originalFields:any[])=>{
+    var processedFields:any[] = [];
+    var findFields:any[] = [];
+    originalFields.map(f=> {
+        
+        if(f.type == 'find'){           
+            findFields = getFindFields(f);
+            processedFields = processedFields.concat(findFields);
+        }else{
+            processedFields.push(f);
+        }
+    })  
+
+    return processedFields;
+}
+
+
+
 //public***************************************************
 export const getDefaultHtmlComponent = () => generateField({type: "string", name:'addThisName', label: "Add This Label" });
 
@@ -223,22 +321,27 @@ export const getHtmlComponents = (fields: Array<any>) =>  fields.map(generateFie
 
 export const getFieldControls = (fields: Array<any>) => { 
     var formFields = getFormFields(fields);
-    var groupsConfig:any[] = getGroupsConfig(formFields);    
-    return groupsConfig.map(generateFieldControl(formFields)).join(',\n');
+    var proccessedFields = proccessFields(formFields);
+    var groupsConfig:any[] = getGroupsConfig(proccessedFields);    
+    return groupsConfig.map(generateFieldControl(proccessedFields)).join(',\n');
     
 }
 
 export const getFieldControlsVariables = (fields: Array<any>) => { 
-    var formFields = getFormFields(fields);
-    var groupsConfig:any[] = getGroupsConfig(formFields);    
+    
+    var formFields = getFormFields(fields);  
+    var proccessedFields = proccessFields(formFields);  
+    var groupsConfig:any[] = getGroupsConfig(proccessedFields);    
     var generatedCode = groupsConfig.map(generateSimpleFieldVariable).join('\n');  
+    
     
     return generatedCode;
 }
 
 export const getFieldControlsReferences = (fields: Array<any>) => {
-    var formFields = getFormFields(fields); 
-    var groupsConfig:any[] = getGroupsConfig(formFields);    
+    var formFields = getFormFields(fields);     
+    var proccessedFields = proccessFields(formFields);  
+    var groupsConfig:any[] = getGroupsConfig(proccessedFields);    
     return groupsConfig.map(generateSimpleFieldReferenceControl).join('');    
 }
 
@@ -254,13 +357,15 @@ export const getConditionalFieldConfig = (fields: any[]) => {
 
 export const getFieldsReferenceForViewModel = (fields: any[]) => {    
     var formFields = getFormFields(fields);
-    var groupsConfig:any[] = getGroupsConfig(formFields);
+    var proccessedFields = proccessFields(formFields);  
+    var groupsConfig:any[] = getGroupsConfig(proccessedFields);
     return groupsConfig.map(getFieldReferenceForViewModel).join('\n');    
 }
 
 export const getFieldsSetterForViewModel = (fields: any[]) => {    
     var formFields = getFormFields(fields);
-    var groupsConfig:any[] = getGroupsConfig(formFields);
+    var proccessedFields = proccessFields(formFields);  
+    var groupsConfig:any[] = getGroupsConfig(proccessedFields);
     return groupsConfig.map(getFieldSetterForViewModel).join('');    
 }
 
