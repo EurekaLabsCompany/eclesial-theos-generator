@@ -11,6 +11,7 @@ import { DateService } from '@app/base/service/date.service';
 import { MoneyService } from '@app/base/service/money.service';
 import { <%= classify(name) %>Service } from '../service/<%= dasherize(name) %>.service';
 import { LoaderUiStatic } from '@app/features/loader-ui/loader-ui.static';
+import { ListDataAdapter, AdapterType } from './../../../../../../../base/list/list-data-adapter';
 
 @Component({
     selector: 'app-<%= dasherize(name) %>-search',
@@ -20,6 +21,8 @@ export class <%= classify(name) %>SearchComponent extends BaseSearchComponent {
 
     public modalId =  '<%= tosimplelowcase(name) %>search';
     public titleSearch: string = '<%= totext(name) %>';
+
+    private adapter:ListDataAdapter = new ListDataAdapter();
 
     constructor(
         service: <%= classify(name) %>Service,
@@ -125,14 +128,11 @@ export class <%= classify(name) %>SearchComponent extends BaseSearchComponent {
     } 
 
     dataAdapter(data) {
-        data.data.forEach((row) => {
-            Object.keys(row).forEach((key) => {
-                if (key === 'situacaoStatus') {
-                    row[key] = row[key] === 1 ? 'Ativo' : 'Inativo';
-                }              
-            });
-        });
-
-        return data.data;
+        return this.adapter.adaptList(
+            [                
+                //this.adapter.simple('situacao',         AdapterType.enumType, ConditionEnum.Situacao),             
+            ]
+        )(data.data);        
+        
     }
 }

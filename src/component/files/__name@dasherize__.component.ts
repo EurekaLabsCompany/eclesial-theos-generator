@@ -123,7 +123,7 @@ export class <%= classify(name) %>Component extends BaseComponent {
 
 
 
-    save() {
+    save(isNew: boolean = false) {
 
         if (this._hasPermissionToSave()) {
            

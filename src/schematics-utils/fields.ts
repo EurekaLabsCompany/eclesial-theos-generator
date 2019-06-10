@@ -26,17 +26,18 @@ const getFieldCommomProperties = (field: any) => (
                                                                 [trySave]="trySave"`
     )
 
+const getFindProperties = (field: any) => (
+`
+                                                                groupName="${field.formGroup || 'formGroup'}"  
+                                                                [showLabel]="false"                                                               
+                                                                (selected)="${tovariable(field.name)}SearchSelected($event)"`
+)
 
 const getSelectProperties = (field: any) => (
     `                           
                                                                 [options]="${field.name}List" 
                                                                 value="id"
                                                                 description="descricao"`
-)
-
-const getFindProperties = (field: any) => (
-    `                           
-                                                                (selected)="${tovariable(field.name)}SearchSelected($event)"`
 )
 
 const getStringProperties = (field: any) => {
@@ -157,7 +158,8 @@ const generateField = (field: any) => {
                                                         </div>
                                                         <div class="col-12 col-md-8">
                                                         <div class="theos-label-inline">
-                                                            <app-eclesial-input-search-${dasherize(field.name)} ${getFieldCommomProperties(fieldDescricao)}${fieldConfig.getFieldProperties(field)}>                                                            
+                                                            <app-eclesial-input-search-${dasherize(field.name)} ${getFieldCommomProperties(fieldDescricao)}${fieldConfig.getFieldProperties(field)}
+                                                                                                                [showLabel]="false">                                                            
                                                             </app-eclesial-input-search-${dasherize(field.name)}>
                                                         </div>    
                                                     </div>
@@ -265,14 +267,25 @@ const getFieldReferenceForViewModel = (fieldConfig: any) => {
     }
 }
 
+const getParsedValue = (fieldConfig: any) => {
+    const fieldType = fieldConfig.options ? fieldConfig.options.dataType : 'string';
+    switch(fieldType){
+        case 'boolean':
+            return `
+            this.${fieldConfig.name} = new Boolean(formGroup.get('${fieldConfig.name}').value).valueOf();`;
+        default:
+            return `
+            this.${fieldConfig.name} = formGroup.get('${fieldConfig.name}').value;`
+    }    
+}
+
 const getFieldSetterForViewModel = (fieldConfig: any) => {
     if(fieldConfig.isGroup){
         return `
         this.${fieldConfig.name}Id = formGroup.get('${fieldConfig.name}').get('id').value;`
             
     }else{
-        return `
-        this.${fieldConfig.name} = formGroup.get('${fieldConfig.name}').value;`
+        return getParsedValue(fieldConfig);
     }
 }
 

@@ -1,5 +1,5 @@
 <div id="content">
-	<sa-widgets-grid>
+	<section id="widgets-grid" class="sortable-grid">
 		<article class="card-theos-fluid">
 			<div class="jarviswidget jarviswidget-sortable" 
 				 id="wid-id-1" 
@@ -48,6 +48,13 @@
 										<div class="row">
 											<%= fields.length > 0 ? getHtmlComponents(fields) : getDefaultHtmlComponent %>
 										</div>
+										
+										<!-- NEED TABS										
+										<tabset>
+											<tab heading="General"></tab>
+											<tab heading="Other"></tab>
+										</tabset>
+										-->
 									</div>
 								</div>
 							</div>
@@ -79,7 +86,7 @@
 
 			</div>
 		</article>
-	</sa-widgets-grid>
+	</section>
 </div>
 
 <ng-snotify></ng-snotify>
