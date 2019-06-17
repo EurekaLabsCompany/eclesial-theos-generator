@@ -1,7 +1,6 @@
 import { capitalize, dasherize } from '@angular-devkit/core/src/utils/strings';
 import { tovariable } from './strings';
 
-
 declare class FieldGeneralConfig {
     alias:string[];
     tag:string;
@@ -20,31 +19,41 @@ const getFieldCommomProperties = (field: any) => (
                                                                 [formGroup]="${field.formGroup || 'formGroup'}" 
                                                                 controlName="${field.name}" 
                                                                 configInputTheos="grid-It" 
-                                                                labelDescription="${field.label}"
-                                                                [lastFocusControl]="lastControlFocus"
+                                                                labelDescription="${field.label}"                                                                
                                                                 (lastFocusControlChange)="lastFocusControlChange($event)"
                                                                 [trySave]="trySave"`
     )
 
 const getFindProperties = (field: any) => (
 `
-                                                                groupName="${field.formGroup || 'formGroup'}"  
-                                                                [showLabel]="false"                                                               
+                                                                groupName="${field.name}"  
+                                                                [showLabel]="false"                                                 
                                                                 (selected)="${tovariable(field.name)}SearchSelected($event)"`
 )
+
 
 const getSelectProperties = (field: any) => (
     `                           
                                                                 [options]="${field.name}List" 
                                                                 value="id"
-                                                                description="descricao"`
+                                                                description="descricao"
+                                                                [lastControlFocus]="lastControlFocus"`
+                                                                
+)
+
+const getDateProperties = (field: any) => (
+    `                           
+                                                                errorDescription="${field.name}"
+                                                                place="dd/mm/aaaa"
+                                                                [lastFocusControl]="lastControlFocus"`
 )
 
 const getStringProperties = (field: any) => {
 return field.limit > 0 ? 
     (
     `                           
-                                                                [limit]="${field.limit}"`
+                                                                [limit]="${field.limit}"
+                                                                [lastFocusControl]="lastControlFocus"`
     ) : ''
 }
 
@@ -109,6 +118,15 @@ const fieldMapper:FieldGeneralConfig[] = [
         getFieldProperties: getStringProperties
     },
     {
+        alias: ["date"], 
+        tag: "app-eclesial-input-date",
+        hasLimit: false,
+        conditionType: 'ConditionEnum.Data',
+        dataType:'string',
+        width: 400,
+        getFieldProperties: getDateProperties
+    },
+    {
         alias: ["find"], 
         tag: "app-eclesial-input-search-class",
         hasLimit: false,
@@ -116,6 +134,15 @@ const fieldMapper:FieldGeneralConfig[] = [
         dataType:'number',
         width: 400,
         getFieldProperties: getFindProperties
+    },
+    {
+        alias: ["situacao"], 
+        tag: "app-eclesial-inativacao",
+        hasLimit: false,
+        conditionType: 'ConditionEnum.Situacao',
+        dataType:'boolean',
+        width: 400,
+        getFieldProperties: noopProperties
     },
         
 ]
@@ -189,15 +216,17 @@ const generateField = (field: any) => {
 }
 
 //Controls
+const isFormGroup = (field:any) => field.formGroup && field.formGroup != 'formGroup'
+
 const getControlConfig = (field:any) => {
     var controlConfig: any = {isGroup: false, options:{}};   
-    if(!field.formGroup || field.formGroup == 'formGroup'){
-        controlConfig.name = field.name;        
-        controlConfig.options = getFieldGeneralConfig(field);
-    }else{
+    if(isFormGroup(field)){
         controlConfig.name = field.formGroup;
         controlConfig.isGroup = true;
         controlConfig.required = field.required;
+    }else{
+        controlConfig.name = field.name;        
+        controlConfig.options = getFieldGeneralConfig(field);
     }
     
     return controlConfig;
@@ -231,8 +260,8 @@ const generateFieldControl = (fields:any[]) => (fieldConfig: any) =>{
         filteredFields = fields.filter(f=> f.formGroup === fieldConfig.name);
         return `          ${fieldConfig.name}: this.formBuilder.group({\n  ${filteredFields.map(generateSimpleFieldControlToGroup).join(', \n  ')}
           }${fieldConfig.required ? ', { validator: EclesialInputSearchValidatorRequired }' : '' })`
-    }else{
-        filteredFields = fields.filter(f=> f.name === fieldConfig.name);
+    }else{        
+        filteredFields = fields.filter(f => !isFormGroup(f) && f.name === fieldConfig.name);        
         return filteredFields.map(generateSimpleFieldControl);
     }
 }
@@ -262,8 +291,8 @@ const getFieldReferenceForViewModel = (fieldConfig: any) => {
     
     if(fieldConfig.isGroup){
         return `    public ${fieldConfig.name}Id: number;`
-    }else{
-        return `    public ${fieldConfig.name}: ${fieldConfig.options.dataType};`
+    }else{ 
+        return `    public ${fieldConfig.name}: ${fieldConfig.options.dataType};`        
     }
 }
 
@@ -315,7 +344,7 @@ const proccessFields = (originalFields:any[])=>{
     originalFields.map(f=> {
         
         if(f.type == 'find'){           
-            findFields = getFindFields(f);
+            findFields = getFindFields(f);            
             processedFields = processedFields.concat(findFields);
         }else{
             processedFields.push(f);

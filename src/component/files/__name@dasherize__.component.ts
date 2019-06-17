@@ -69,7 +69,7 @@ export class <%= classify(name) %>Component extends BaseComponent {
     
     private _createForm() {
         this.formGroup = this.formBuilder.group({
-<%= fields? getFieldControls(fields) : '//TODO - Define the controls here!' %>
+<%= fields? getFieldControls([{"name": "id", "label": "Id", "type": "number"},...fields]) : '//TODO - Define the controls here!' %>
         ,
         organismo: this.formBuilder.group({
             id: null,
@@ -88,7 +88,7 @@ export class <%= classify(name) %>Component extends BaseComponent {
         this.controlOrganismo = <FormGroup>this.formGroup.get('organismo');
         this.controlTelaSistema = <FormControl>this.formGroup.get('telaSistema');
 
-        <%= fields?  getFieldControlsReferences(fields) : '//TODO - set the control references here!' %>
+        <%= fields?  getFieldControlsReferences([{"name": "id", "label": "Id", "type": "number"},...fields]) : '//TODO - set the control references here!' %>
     }
 
     private _setDefaultValues() {

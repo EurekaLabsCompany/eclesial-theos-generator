@@ -11,7 +11,7 @@ import { DateService } from '@app/base/service/date.service';
 import { MoneyService } from '@app/base/service/money.service';
 import { <%= classify(name) %>Service } from '../service/<%= dasherize(name) %>.service';
 import { LoaderUiStatic } from '@app/features/loader-ui/loader-ui.static';
-import { ListDataAdapter, AdapterType } from './../../../../../../../base/list/list-data-adapter';
+import { ListDataAdapter, AdapterType } from '@app/base/list/list-data-adapter';
 
 @Component({
     selector: 'app-<%= dasherize(name) %>-search',
