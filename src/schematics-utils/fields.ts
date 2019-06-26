@@ -43,7 +43,7 @@ const getSelectProperties = (field: any) => (
 
 const getDateProperties = (field: any) => (
     `                           
-                                                                errorDescription="${field.name}"
+                                                                errorDescription="${field.label}"
                                                                 place="dd/mm/aaaa"
                                                                 [lastFocusControl]="lastControlFocus"`
 )
@@ -56,6 +56,14 @@ return field.limit > 0 ?
                                                                 [lastFocusControl]="lastControlFocus"`
     ) : ''
 }
+
+const getMoneyProperties = (field: any) => {
+    return field.limit > 0 ? 
+        (
+        `                           
+                                                                     place="R$ 0,00"`
+        ) : ''
+    }
 
 
 const getSearchFields = (fields: any[]) => fields.filter(f => f.entries && f.entries.indexOf("search") >= 0);
@@ -80,6 +88,15 @@ const fieldMapper:FieldGeneralConfig[] = [
         dataType:'number',
         width: 80,
         getFieldProperties: getStringProperties
+    },
+    {
+        alias: ["money"], 
+        tag: "app-eclesial-input-money",
+        hasLimit: true,
+        conditionType: 'ConditionEnum.Money',
+        dataType:'number',
+        width: 80,
+        getFieldProperties: getMoneyProperties
     },
     {
         alias: ["string", "text"], 
