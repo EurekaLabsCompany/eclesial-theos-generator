@@ -11,6 +11,8 @@ import { DateService } from '@app/base/service/date.service';
 import { AppConfig } from '@app/config/app.config';
 import { EclesialNotificationService } from '@app/base/service/eclesial-notification.service';
 import { ActionNoPermissionUiStatic } from '@app/features/action-no-permission-ui/action-no-permission-ui.static';
+import { getPreviousRoute } from '@app/base/utils/url-route';
+
 import { <%= classify(name) %>Application } from '../application/<%= dasherize(name) %>.application';
 import { <%= classify(name) %>Service } from '../service/<%= dasherize(name) %>.service';
 import { <%= classify(name) %>SearchComponent } from '../search/<%= dasherize(name) %>-search.component';
@@ -55,11 +57,12 @@ export class <%= classify(name) %>Component extends BaseComponent {
             modalService,
             controlService,
             permissionService,
-            <%= classify(name) %>Component.actPermissions.BBT_<%= toconst(name) %>,
             router,
+            <%= classify(name) %>Component.actPermissions.BBT_<%= toconst(name) %>
         );
 
         this.routeName = _route.routeConfig.data.name;
+        this.rootUrl = getPreviousRoute(location);
 
         this._createForm();
 

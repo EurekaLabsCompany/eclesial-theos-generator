@@ -1,4 +1,5 @@
 import { FormGroup } from '@angular/forms';
+import { ViewModelSauce } from '@app/base/viewmodel/viewmodel.sauce';
 
 
 export class Add<%= classify(name) %>ViewModel { 
@@ -7,7 +8,7 @@ export class Add<%= classify(name) %>ViewModel {
     public organismoId: string;
     public telaSistema: string;
     
-
+    private sauce = new ViewModelSauce();
     constructor(formGroup: FormGroup) {
         <%= fields.length > 0 ? getFieldsSetterForViewModel(fields) : "this.codigo = formGroup.get('codigo').value;; //TODO - Set your fields here!" %>
         

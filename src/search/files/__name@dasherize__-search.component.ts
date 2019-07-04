@@ -66,66 +66,7 @@ export class <%= classify(name) %>SearchComponent extends BaseSearchComponent {
         this.organismo = organismo;
         this.telaSistema = telaSistema;
     }
-
-    search() {
-
-        if (this.verifySearchIsValid()) {
-            LoaderUiStatic.open();
-            this.service.getSearch(this.modalFormGroup, 1, this.organismo.id, this.telaSistema, this.searchApiArgument, this.searchApiArgumentValue).subscribe((data) => {
-                try {
-                    if (data.data[0] === undefined) {
-                        this.rowData = [];
-                        this.overlayNoRowsTemplate = '<span>Nenhum registro encontrado.</span>';
-                        this.totalSearchData = undefined;
-                        this.totalSearchPages = undefined;
-                    } else {
-                        this.rowData = this.dataAdapter(data);
-                        this.totalSearchData = data.totalRows;
-                        this.searchCurrentPage = 1;
-                        this.totalSearchPages = this.pageCalculatorService.calculate(data.totalRows);
-                    }
-                } finally {
-                    LoaderUiStatic.close();
-                }
-            }, (error) => {
-                try {
-                    this.errorHandlerService.handle(error);
-                } finally {
-                    LoaderUiStatic.close();
-                }
-            });
-        }
-        this.restoreConditionState();
-    }
-
-    newPageSearch(event: number) {
-        if (this.verifySearchIsValid()) {
-            LoaderUiStatic.open();
-            this.service.getSearch(this.modalFormGroup, event, this.organismo.id, this.telaSistema, this.searchApiArgument, this.searchApiArgumentValue).subscribe((data) => {
-                try {
-                    if (data.data[0] === undefined) {
-                        this.rowData = [];
-                        this.overlayNoRowsTemplate = '<span>Nenhum registro encontrado.</span>';
-                        this.totalSearchData = undefined;
-                        this.totalSearchPages = undefined;
-                        this.gridApi.sizeColumnsToFit();
-                    } else {
-                        this.rowData = this.dataAdapter(data);
-                        this.gridApi.sizeColumnsToFit();
-                    }
-                } finally {
-                    LoaderUiStatic.close();
-                }
-            }, (error) => {
-                try {
-                    this.errorHandlerService.handle(error);
-                } finally {
-                    LoaderUiStatic.close();
-                }
-            });
-        }
-        this.restoreConditionState();
-    } 
+    
 
     dataAdapter(data) {
         return this.adapter.adaptList(

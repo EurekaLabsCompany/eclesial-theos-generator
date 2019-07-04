@@ -17,19 +17,24 @@ declare class FieldGeneralConfig {
 const getFieldCommomProperties = (field: any) => (
 `   
                                                                 [formGroup]="${field.formGroup || 'formGroup'}" 
-                                                                controlName="${field.name}" 
-                                                                configInputTheos="grid-It" 
+                                                                controlName="${field.name}"
                                                                 labelDescription="${field.label}"                                                                
                                                                 (lastFocusControlChange)="lastFocusControlChange($event)"
-                                                                [trySave]="trySave"`
+                                                                [trySave]="trySave"
+                                                                `
     )
 
 const getFindProperties = (field: any) => (
 `
-                                                                groupName="${field.name}"  
-                                                                [showLabel]="false"                                                 
+                                                                groupName="${field.name}" 
+                                                                configInputTheos="grid-It ${field.name != 'codigo' ? '' : 'no-label'}" 
                                                                 (selected)="${tovariable(field.name)}SearchSelected($event)"`
 )
+
+const getSituacaoProperties = (field: any) => (
+    `                           
+                                                                configInputTheos="grid-It" `
+    )
 
 
 const getSelectProperties = (field: any) => (
@@ -37,40 +42,50 @@ const getSelectProperties = (field: any) => (
                                                                 [options]="${field.name}List" 
                                                                 value="id"
                                                                 description="descricao"
-                                                                [lastControlFocus]="lastControlFocus"`
+                                                                [lastControlFocus]="lastControlFocus"
+                                                                configInputTheos="grid-It" `
                                                                 
 )
+
+const getCheckboxProperties = (field: any) => (
+    `                           
+                                                                configInputTheos="grid-It" `
+    )
 
 const getDateProperties = (field: any) => (
     `                           
                                                                 errorDescription="${field.label}"
                                                                 place="dd/mm/aaaa"
-                                                                [lastFocusControl]="lastControlFocus"`
+                                                                [lastFocusControl]="lastControlFocus"
+                                                                configInputTheos="grid-It" `
 )
 
-const getStringProperties = (field: any) => {
-return field.limit > 0 ? 
-    (
+const getStringProperties = (field: any) => (
     `                           
-                                                                [limit]="${field.limit}"
-                                                                [lastFocusControl]="lastControlFocus"`
-    ) : ''
-}
+                                                                ${field.limit ? '[limit]="' + field.limit + '"': ''}
+                                                                [lastFocusControl]="lastControlFocus"
+                                                                configInputTheos="grid-It" `
+    ) 
 
-const getMoneyProperties = (field: any) => {
-    return field.limit > 0 ? 
-        (
+    const getStringProperties = (field: any) => (
+    `                           
+                                                                ${field.limit ? '[limit]="' + field.limit + '"': ''}
+                                                                [lastFocusControl]="lastControlFocus"
+                                                                configInputTheos="grid-It"
+                                                                mask="0.0.0//your mask here" `
+    ) 
+
+const getMoneyProperties = (field: any) => (
         `                           
-                                                                     place="R$ 0,00"`
-        ) : ''
-    }
+                                                                place="R$ 0,00"
+                                                                configInputTheos="grid-It" `
+        )
 
 
 const getSearchFields = (fields: any[]) => fields.filter(f => f.entries && f.entries.indexOf("search") >= 0);
 
 const getFormFields = (fields: any[]) => fields.filter(f => !f.entries || f.entries.indexOf("form") >= 0);
 
-const noopProperties = () => ""
 
 const findControls: any[] = [
     {name: "id",            type: "number"},
@@ -108,6 +123,15 @@ const fieldMapper:FieldGeneralConfig[] = [
         getFieldProperties: getStringProperties
     },
     {
+        alias: ["mask"], 
+        tag: "app-eclesial-input-masked",
+        hasLimit: true,
+        conditionType: 'ConditionEnum.String',
+        dataType:'string',
+        width: 200,
+        getFieldProperties: getMaskProperties
+    },
+    {
         alias: ["select", "options", "array"], 
         tag: "app-eclesial-select",
         hasLimit: false,
@@ -123,7 +147,7 @@ const fieldMapper:FieldGeneralConfig[] = [
         conditionType: 'ConditionEnum.Bool',
         dataType:'boolean',
         width: 80,
-        getFieldProperties: noopProperties
+        getFieldProperties: getCheckboxProperties
     },
     {
         alias: ["textArea"], 
@@ -159,7 +183,7 @@ const fieldMapper:FieldGeneralConfig[] = [
         conditionType: 'ConditionEnum.Situacao',
         dataType:'boolean',
         width: 400,
-        getFieldProperties: noopProperties
+        getFieldProperties: getSituacaoProperties
     },
         
 ]
@@ -188,7 +212,7 @@ const generateField = (field: any) => {
     var fieldHtml = '';
     
     if(field.type == 'find'){        
-        const fieldCodigo = {name: 'codigo', type: 'number'};
+        const fieldCodigo = {name: 'codigo', type: 'number',  label: field.label};
         const fieldDescricao = {name: 'descricao', type: 'string'};
         fieldHtml = 
         `
@@ -203,7 +227,7 @@ const generateField = (field: any) => {
                                                         <div class="col-12 col-md-8">
                                                         <div class="theos-label-inline">
                                                             <app-eclesial-input-search-${dasherize(field.name)} ${getFieldCommomProperties(fieldDescricao)}${fieldConfig.getFieldProperties(field)}
-                                                                                                                [showLabel]="false">                                                            
+                                                            [showLabel]="false">                                                            
                                                             </app-eclesial-input-search-${dasherize(field.name)}>
                                                         </div>    
                                                     </div>
@@ -318,7 +342,13 @@ const getParsedValue = (fieldConfig: any) => {
     switch(fieldType){
         case 'boolean':
             return `
-            this.${fieldConfig.name} = new Boolean(formGroup.get('${fieldConfig.name}').value).valueOf();`;
+            this.${fieldConfig.name} = this.sauce.getBooleanValue(formGroup.get('${fieldConfig.name}').value);`;
+        case 'date':
+            return `
+            this.${fieldConfig.name} = this.sauce.getDataValue(formGroup.get('${fieldConfig.name}').value);`;
+        case 'money':
+            return `
+            this.${fieldConfig.name} = this.sauce.getMoneyValue(formGroup.get('${fieldConfig.name}').value);`;
         default:
             return `
             this.${fieldConfig.name} = formGroup.get('${fieldConfig.name}').value;`
