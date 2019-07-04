@@ -46,14 +46,7 @@ export class <%= classify(name) %>Service implements IBaseService {
       'pageNumber': pageNumber,
       'pageSize': 50,
       'telaSistema': telaSistema,
-      'filterParameters': [
-				{
-					'propriedade': formGroup.get('campo').value,
-					'tipo': formGroup.get('condicao').value,
-					'termo': formGroup.get('busca.termoInicial').value,
-					'termoFinal': formGroup.get('busca.termoFinal').value,
-				},
-			],
+      'filterParameters': getFilterParameters(formGroup)
     };
 
     return this.http.post<any[]>(`${this.apiUrl}/search`, viewModel);
