@@ -22,7 +22,7 @@ const getFieldCommomProperties = (field: any) => (
                                                                 (lastFocusControlChange)="lastFocusControlChange($event)"
                                                                 [trySave]="trySave"
                                                                 `
-    )
+)
 
 const getFindProperties = (field: any) => (
 `
@@ -31,10 +31,10 @@ const getFindProperties = (field: any) => (
                                                                 (selected)="${tovariable(field.name)}SearchSelected($event)"`
 )
 
-const getSituacaoProperties = (field: any) => (
+const getSituacaoProperties = () => (
     `                           
                                                                 configInputTheos="grid-It" `
-    )
+)
 
 
 const getSelectProperties = (field: any) => (
@@ -42,44 +42,47 @@ const getSelectProperties = (field: any) => (
                                                                 [options]="${field.name}List" 
                                                                 value="id"
                                                                 description="descricao"
-                                                                [lastControlFocus]="lastControlFocus"
+                                                                [lastFocusControl]="lastFocusControl"
                                                                 configInputTheos="grid-It" `
                                                                 
 )
 
-const getCheckboxProperties = (field: any) => (
+const getCheckboxProperties = () => (
     `                           
                                                                 configInputTheos="grid-It" `
-    )
+)
 
 const getDateProperties = (field: any) => (
     `                           
                                                                 errorDescription="${field.label}"
                                                                 place="dd/mm/aaaa"
-                                                                [lastFocusControl]="lastControlFocus"
+                                                                [lastFocusControl]="lastFocusControl"
                                                                 configInputTheos="grid-It" `
 )
 
 const getStringProperties = (field: any) => (
     `                           
                                                                 ${field.limit ? '[limit]="' + field.limit + '"': ''}
-                                                                [lastFocusControl]="lastControlFocus"
+                                                                [lastFocusControl]="lastFocusControl"
                                                                 configInputTheos="grid-It" `
-    ) 
+) 
 
-    const getStringProperties = (field: any) => (
-    `                           
-                                                                ${field.limit ? '[limit]="' + field.limit + '"': ''}
-                                                                [lastFocusControl]="lastControlFocus"
-                                                                configInputTheos="grid-It"
-                                                                mask="0.0.0//your mask here" `
-    ) 
-
-const getMoneyProperties = (field: any) => (
+const getMoneyProperties = () => (
         `                           
                                                                 place="R$ 0,00"
                                                                 configInputTheos="grid-It" `
-        )
+)
+
+const getMaskProperties = () => (
+    `
+                                                                configInputTheos="grid-It"
+                                                                mask="00/0000"
+    `
+)
+
+const noopProperties = () => (
+                                                                ""
+)
 
 
 const getSearchFields = (fields: any[]) => fields.filter(f => f.entries && f.entries.indexOf("search") >= 0);
@@ -457,5 +460,3 @@ export const getFieldsSetterForViewModel = (fields: any[]) => {
     var groupsConfig:any[] = getGroupsConfig(proccessedFields);
     return groupsConfig.map(getFieldSetterForViewModel).join('');    
 }
-
-
